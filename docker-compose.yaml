@@ -1,0 +1,29 @@
+version: "3"
+services:
+  server:
+    image: node:latest
+    ports:
+      - 3000:3000
+    environment:
+      - DB_NAME=footballers
+      - DB_CONNECTION=mongodb://zakgogi:pword@db:27017
+    depends_on:
+      - db
+    volumes:
+      - type: bind
+        source: ./server
+        target: /code
+    working_dir: /code
+    command: bash -c "npm install && npm start"
+
+  db:
+    image: mongo:latest
+    volumes:
+      - "footballStuff:/var/lib/mongodb/data"
+      - "./db:/docker-entrypoint-initdb.d/seed.js:ro"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=zakgogi
+      - MONGO_INITDB_DATABASE=footballers
+      - MONGO_INITDB_ROOT_PASSWORD=pword
+volumes:
+  footballStuff:
